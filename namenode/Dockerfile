@@ -1,6 +1,7 @@
-FROM bde2020/hadoop-base:2.0.0-hadoop3.2.1-java8
+ARG BASE=hadoop-pash-base
+ARG RELEASE=ubnutu-18.04
 
-MAINTAINER Ivan Ermilov <ivan.s.ermilov@gmail.com>
+FROM $BASE:$RELEASE
 
 HEALTHCHECK CMD curl -f http://localhost:9870/ || exit 1
 
