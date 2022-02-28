@@ -13,7 +13,7 @@ See repository branches for supported hadoop versions
 
 To deploy an example HDFS cluster with pash installed, run:
 ```
-  ./setup.py
+  ./setup.sh
 ```
 
 Run example wordcount job:
