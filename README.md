@@ -11,9 +11,9 @@ See repository branches for supported hadoop versions
 
 ## Quick Start
 
-To deploy an example HDFS cluster, run:
+To deploy an example HDFS cluster with pash installed, run:
 ```
-  docker-compose up
+  ./setup.py
 ```
 
 Run example wordcount job:
@@ -23,6 +23,7 @@ Run example wordcount job:
 
 Or deploy in swarm:
 ```
+make
 docker stack deploy -c docker-compose-v3.yml hadoop
 ```
 
