@@ -4,10 +4,11 @@ RUN apt-get update -y
 RUN apt-get install -y git vim
 ENV PASH_HOST="docker"
 # download PaSh
-RUN git clone https://github.com/binpash/pash.git /opt/pash
+RUN git clone https://github.com/binpash/pash.git /opt/pash --depth 1 -b dspash
 # install PaSh and setup shell paths
-RUN yes | bash /opt/pash/scripts/install.sh -p
-
+RUN bash /opt/pash/scripts/distro-deps.sh -o 
+RUN yes | bash /opt/pash/scripts/setup-pash.sh -o
+RUN bash /opt/pash/scripts/setup-dspash.sh
 # append for unicode issues
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
