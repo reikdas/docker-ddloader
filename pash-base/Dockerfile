@@ -3,6 +3,7 @@ FROM ubuntu:18.04
 RUN apt-get update -y
 RUN apt-get install -y git vim
 ENV PASH_HOST="docker"
+ENV PASH_TOP="/opt/pash"
 # download PaSh
 RUN git clone https://github.com/binpash/pash.git /opt/pash --depth 1 -b dspash
 # install PaSh and setup shell paths

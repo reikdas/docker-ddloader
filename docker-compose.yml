@@ -53,10 +53,13 @@ services:
       - ./hadoop.env
     ports:
       - "8042:8042"
-  
+    volumes:
+      - ${PWD}/dspash-config.json:/opt/pash/cluster.json
+    
   datanode1:
     build: ./datanode
     container_name: datanode1
+    command: bash /opt/pash/compiler/dspash/worker.sh
     depends_on:
       - namenode
     volumes:
@@ -67,6 +70,7 @@ services:
   datanode2:
     build: ./datanode
     container_name: datanode2
+    command: bash /opt/pash/compiler/dspash/worker.sh
     depends_on:
       - namenode
     volumes:
@@ -77,6 +81,7 @@ services:
   datanode3:
     build: ./datanode
     container_name: datanode3
+    command: bash /opt/pash/compiler/dspash/worker.sh
     depends_on:
       - namenode
     volumes:
