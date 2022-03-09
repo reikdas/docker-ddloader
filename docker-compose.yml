@@ -59,7 +59,7 @@ services:
   datanode1:
     build: ./datanode
     container_name: datanode1
-    command: bash /opt/pash/compiler/dspash/worker.sh
+    command: opt/pash/start_worker.sh
     depends_on:
       - namenode
     volumes:
@@ -70,7 +70,7 @@ services:
   datanode2:
     build: ./datanode
     container_name: datanode2
-    command: bash /opt/pash/compiler/dspash/worker.sh
+    command: opt/pash/start_worker.sh
     depends_on:
       - namenode
     volumes:
@@ -81,7 +81,7 @@ services:
   datanode3:
     build: ./datanode
     container_name: datanode3
-    command: bash /opt/pash/compiler/dspash/worker.sh
+    command: opt/pash/start_worker.sh
     depends_on:
       - namenode
     volumes:

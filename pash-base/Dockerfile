@@ -10,6 +10,10 @@ RUN git clone https://github.com/binpash/pash.git /opt/pash --depth 1 -b dspash
 RUN bash /opt/pash/scripts/distro-deps.sh -o 
 RUN yes | bash /opt/pash/scripts/setup-pash.sh -o
 RUN bash /opt/pash/scripts/setup-dspash.sh
+
+ADD start_worker.sh /opt/pash/start_worker.sh
+RUN chmod a+x /opt/pash/start_worker.sh
+
 # append for unicode issues
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
