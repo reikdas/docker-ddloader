@@ -12,7 +12,6 @@ services:
       - ./hadoop.env
     ports:
       - "9870:9870"
-      - "9000:9000"
   
   resourcemanager:
     build: ./resourcemanager
@@ -59,7 +58,6 @@ services:
   datanode1:
     build: ./datanode
     container_name: datanode1
-    command: opt/pash/start_worker.sh
     depends_on:
       - namenode
     volumes:
@@ -70,7 +68,6 @@ services:
   datanode2:
     build: ./datanode
     container_name: datanode2
-    command: opt/pash/start_worker.sh
     depends_on:
       - namenode
     volumes:
@@ -81,7 +78,6 @@ services:
   datanode3:
     build: ./datanode
     container_name: datanode3
-    command: opt/pash/start_worker.sh
     depends_on:
       - namenode
     volumes:

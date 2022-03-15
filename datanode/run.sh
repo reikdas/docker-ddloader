@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Start worker
+bash $PASH_TOP/compiler/dspash/worker.sh &> /dev/null &
+
 datadir=`echo $HDFS_CONF_dfs_datanode_data_dir | perl -pe 's#file://##'`
 if [ ! -d $datadir ]; then
   echo "Datanode data directory not found: $datadir"
