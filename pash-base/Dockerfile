@@ -5,7 +5,7 @@ RUN apt-get install -y git vim
 ENV PASH_HOST="docker"
 ENV PASH_TOP="/opt/pash"
 # download PaSh
-RUN git clone https://github.com/binpash/pash.git /opt/pash --depth 1 -b dspash
+RUN git clone https://github.com/binpash/pash.git /opt/pash -b dspash-hdfs
 # install PaSh and setup shell paths
 RUN bash /opt/pash/scripts/distro-deps.sh -o 
 RUN yes | bash /opt/pash/scripts/setup-pash.sh -o
