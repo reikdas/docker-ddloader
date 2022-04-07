@@ -1,5 +1,5 @@
 ARG BASE=hadoop-pash-base
-ARG RELEASE=ubnutu-18.04
+ARG RELEASE=ubuntu-18.04
 
 FROM $BASE:$RELEASE
 

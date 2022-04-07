@@ -1,4 +1,4 @@
-export RELEASE="ubnutu-18.04"
+export RELEASE="ubuntu-18.04"
 
 make build
 
