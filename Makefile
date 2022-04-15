@@ -3,7 +3,7 @@ ENV_FILE = hadoop.env
 ifdef RELEASE
 RELEASE := $(RELEASE)
 else
-RELEASE := ubnutu-18.04
+RELEASE := ubuntu-18.04
 endif
 
 build:
