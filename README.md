@@ -1,31 +1,44 @@
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/big-data-europe/Lobby)
 
-# Changes
-
-Version 2.0.0 introduces uses wait_for_it script for the cluster startup
 
 # Hadoop Docker
 
-## Supported Hadoop Versions
-See repository branches for supported hadoop versions
+
 
 ## Quick Start
 
-To deploy an example HDFS cluster with pash installed, run:
+To deploy a simulated HDFS cluster with pash installed, run:
 ```
   ./setup.sh
 ```
 
-Run example wordcount job:
+To stop it you can rub
 ```
-  make wordcount
+docker-compose down
 ```
 
-Or deploy in swarm:
+Or to deploy in swarm:
+
+Please follow this [docker swarm tutorial](https://docs.docker.com/engine/swarm/swarm-tutorial/) to setup swarm with couple machines if not setup. 
 ```
-make
-docker stack deploy -c docker-compose-v3.yml hadoop
+./setup-swarm
 ```
+
+To teardown the swarm
+```
+./stop.sh
+```
+
+Finally, to clean all images and volumes (note: you might want to run this
+on all nodes that participated in swarm mode)
+```
+./clean.sh
+```
+
+<!-- Run example wordcount job:
+```
+  make wordcount
+``` -->
 
 `docker-compose` creates a docker network that can be found by running `docker network list`, e.g. `dockerhadoop_default`.
 

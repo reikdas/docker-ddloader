@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# Start worker
-bash $PASH_TOP/compiler/dspash/worker.sh &> /dev/null &
+# pull latest changes (added for convenience) and start worker
+cd $PASH_TOP
+git pull
+cd -
+# TODO: set up logrotate
+bash $PASH_TOP/compiler/dspash/worker.sh &> worker.log &
 
 datadir=`echo $HDFS_CONF_dfs_datanode_data_dir | perl -pe 's#file://##'`
 if [ ! -d $datadir ]; then

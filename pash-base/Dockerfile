@@ -1,14 +1,14 @@
 FROM ubuntu:18.04
 
-RUN apt-get update -y
-RUN apt-get install -y git vim
+RUN apt-get update -y && apt-get update --fix-missing
+RUN apt-get install -y git vim iputils-ping
 ENV PASH_HOST="docker"
 ENV PASH_TOP="/opt/pash"
 # download PaSh
 RUN git clone https://github.com/binpash/pash.git /opt/pash -b dspash-future
 # install PaSh and setup shell paths
-RUN bash /opt/pash/scripts/distro-deps.sh -o 
-RUN yes | bash /opt/pash/scripts/setup-pash.sh -o
+RUN bash /opt/pash/scripts/distro-deps.sh
+RUN yes | bash /opt/pash/scripts/setup-pash.sh
 RUN yes | bash /opt/pash/scripts/setup-dspash.sh
 
 # append for unicode issues

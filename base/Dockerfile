@@ -1,5 +1,5 @@
 ARG BASE=pash-base
-ARG RELEASE=ubuntu-18.04
+ARG RELEASE=latest
 
 FROM $BASE:$RELEASE
 

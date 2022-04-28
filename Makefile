@@ -1,21 +1,21 @@
-DOCKER_NETWORK = docker-hadoop_default
+DOCKER_NETWORK = hbase
 ENV_FILE = hadoop.env
 ifdef RELEASE
 RELEASE := $(RELEASE)
 else
-RELEASE := ubuntu-18.04
+RELEASE := latest
 endif
 
 build:
 	docker build -t pash-base:$(RELEASE) ./pash-base
 	docker build -t hadoop-pash-base:$(RELEASE) ./base
 
-# docker build -t hadoop-namenode:$(RELEASE) ./namenode
-# docker build -t hadoop-datanode:$(RELEASE) ./datanode
-# docker build -t hadoop-resourcemanager:$(RELEASE) ./resourcemanager
-# docker build -t hadoop-nodemanager:$(RELEASE) ./nodemanager
-# docker build -t hadoop-historyserver:$(RELEASE) ./historyserver
-# docker build -t hadoop-submit:$(RELEASE) ./submit
+	docker build -t hadoop-namenode:$(RELEASE) ./namenode
+	docker build -t hadoop-datanode:$(RELEASE) ./datanode
+	docker build -t hadoop-resourcemanager:$(RELEASE) ./resourcemanager
+	docker build -t hadoop-nodemanager:$(RELEASE) ./nodemanager
+	docker build -t hadoop-historyserver:$(RELEASE) ./historyserver
+	docker build -t hadoop-submit:$(RELEASE) ./submit
 
 wordcount:
 	docker build -t hadoop-wordcount ./submit
