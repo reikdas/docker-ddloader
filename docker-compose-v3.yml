@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 
 services:
   namenode:
@@ -14,6 +14,7 @@ services:
       - ./hadoop.env
     deploy:
       mode: replicated
+      endpoint_mode: dnsrr
       replicas: 1
       restart_policy:
         condition: on-failure
@@ -37,6 +38,7 @@ services:
       SERVICE_PRECONDITION: "namenode:9870"
     deploy:
       mode: global
+      endpoint_mode: dnsrr
       restart_policy:
         condition: on-failure
       labels:
@@ -53,6 +55,7 @@ services:
       - ./hadoop.env
     deploy:
       mode: replicated
+      endpoint_mode: dnsrr
       replicas: 1
       restart_policy:
         condition: on-failure
@@ -75,6 +78,7 @@ services:
       - ./hadoop.env
     deploy:
       mode: global
+      endpoint_mode: dnsrr
       restart_policy:
         condition: on-failure
       labels:
@@ -108,5 +112,6 @@ volumes:
 
 networks:
   hbase:
-    external:
-      name: hbase
+    name: hbase
+    external: true
+
