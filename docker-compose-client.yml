@@ -1,0 +1,18 @@
+version: '2.1'
+
+services:
+  client:
+    image: localhost:5000/hadoop-pash-base:latest
+    networks:
+      - hbase
+    volumes:
+      - ${PWD}/dspash-config.json:/opt/pash/cluster.json
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop.env
+    command: ["/opt/pash/runtime/dspash/file_reader/discovery_server"]
+networks:
+  hbase:
+    name: hbase
+    external: true
