@@ -14,7 +14,7 @@ docker service create --name registry --publish published=5000,target=5000  regi
 for image in hadoop-historyserver hadoop-nodemanager hadoop-resourcemanager hadoop-datanode hadoop-namenode hadoop-pash-base; 
 do 
     echo pushing $image 
-    docker rmi localhost:5000/$image:$RELEASE
+    # docker rmi localhost:5000/$image:$RELEASE
     docker image tag  $image:$RELEASE localhost:5000/$image:$RELEASE; 
     docker image push  localhost:5000/$image:$RELEASE
     

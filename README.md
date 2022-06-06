@@ -9,24 +9,29 @@
 
 To deploy a simulated HDFS cluster with pash installed, run:
 ```
-  ./setup.sh
+  ./setup-compose.sh
 ```
 
-To stop it you can rub
+To stop it you can run
 ```
-docker-compose down
+./stop-compose.sh [-v]
 ```
 
 Or to deploy in swarm:
 
 Please follow this [docker swarm tutorial](https://docs.docker.com/engine/swarm/swarm-tutorial/) to setup swarm with couple machines if not setup. 
 ```
-./setup-swarm
+./setup-swarm.sh
 ```
 
 To teardown the swarm
 ```
-./stop.sh
+./stop-swarm.sh
+```
+
+To start a client that interacts with the hdfs cluster run (you can use this client to run bash scripts on the cluster)
+```
+./start-client.sh
 ```
 
 Finally, to clean all images and volumes (note: you might want to run this
