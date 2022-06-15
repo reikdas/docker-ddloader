@@ -2,7 +2,7 @@ version: '2.1'
 
 services:
   client:
-    image: localhost:5000/hadoop-pash-base:latest
+    image: localhost:5000/hadoop-pash-base:$RELEASE
     networks:
       - hbase
     volumes:

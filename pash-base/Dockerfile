@@ -1,4 +1,5 @@
 FROM ubuntu:18.04
+ARG RELEASE=latest
 
 RUN apt-get update -y && apt-get update --fix-missing
 RUN apt-get install -y git vim iputils-ping
@@ -10,6 +11,10 @@ RUN git clone https://github.com/binpash/pash.git /opt/pash -b dspash-future
 RUN bash /opt/pash/scripts/distro-deps.sh
 RUN yes | bash /opt/pash/scripts/setup-pash.sh
 RUN yes | bash /opt/pash/scripts/setup-dspash.sh
+
+RUN if [ "$RELEASE" = "eval" ]; then \
+        apt-get update && cd /opt/pash/evaluation/distr_benchmarks && ./install_all_deps.sh; \
+    fi
 
 # append for unicode issues
 ENV LC_ALL en_US.UTF-8

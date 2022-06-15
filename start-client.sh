@@ -1,4 +1,10 @@
 #!/bin/bash
+if [ $1 == '--eval' ]; then
+    export RELEASE="eval"
+else
+    export RELEASE="latest"
+fi
+
 echo "Generating config"
 ./gen_config.sh
 
