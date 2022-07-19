@@ -16,6 +16,8 @@
 manifest=${1?"ERROR: No cloudlab manifest file given"}
 user=${2?"ERROR: No cloudlab user given"}
 
+pip install --user ClusterShell -q
+
 ## Optionally the caller can give us a private key for the ssh
 key=$3
 if [ -z "$key" ]; then
@@ -24,28 +26,14 @@ else
     key_flag="-i ${key}"
 fi
 
-grep "hostname=" "${manifest}" | sed -E 's/^.*hostname="([a-z0-9\.]+)".*$/\1/g' | sort -u > hostnames.txt
-
+grep -o 'hostname="[^\"]*"' "$manifest" | sed -E 's/^.*hostname="([^\]+)".*$/\1/g' | sort -u > hostnames.txt
 echo "Hosts:"
 cat hostnames.txt
 
 ##
-## Install docker on all nodes
+## Install docker on all cluster machines
 ##
-while IFS= read -r hostname
-do
-  echo "Installing on ${user}@${hostname}..." 
-  ## Notes:
-  ## The following line was added to not have the interactive check
-  ##   `-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no`
-  ##
-  ## This could be made more robust to also work if a connection fails,
-  ##   maybe using `nohup` on the remote server or something.
-  ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${hostname} 'bash -s' <<'ENDSSH'
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-ENDSSH
-done < hostnames.txt
+clush --hostfile hostnames.txt -O ssh_options="-oStrictHostKeyChecking=no ${key_flag}" -l $user -b "curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh"
 
 ##
 ## Initialize a swarm from the manager
@@ -59,36 +47,22 @@ sudo docker swarm init --advertise-addr $(hostname -i)
 ENDSSH
 } | tee swarm_advertise_output.txt
 
-tail +2 hostnames.txt > worker_hostnames.txt
-
-
-cat swarm_advertise_output.txt | grep "docker swarm join --token" | sed 's/^/sudo/g' > join_swarm_command.sh
+join_command=$(cat swarm_advertise_output.txt | grep "docker swarm join --token" | sed 's/^/sudo/g')
 
 ##
-## Join swarm with workers
+## Run join command on all swarm workers (execluding manager)
 ##
-while IFS= read -r hostname
-do
-  echo "Joining swarm from ${user}@${hostname}..." 
-  ## Notes:
-  ## The following line was added to not have the interactive check
-  ##   `-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no`
-  ##
-  ## This could be made more robust to also work if a connection fails,
-  ##   maybe using `nohup` on the remote server or something.
-  ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${hostname} 'bash -s' < join_swarm_command.sh
-done < worker_hostnames.txt
+echo "join command is: " $join_command
+clush --hostfile hostnames.txt -x "$manager_hostname" -O ssh_options="${key_flag}" -l "$user" -b $join_command
 
 ##
 ## Install our Hadoop infrastructure
 ##
-ssh ${key_flag} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 22 ${user}@${manager_hostname} 'bash -s' <<'ENDSSH'
+ssh ${key_flag} -p 22 ${user}@${manager_hostname} 'bash -s' <<'ENDSSH'
 ## Just checking that the workers have joined
 sudo docker node ls
 git clone https://github.com/binpash/docker-hadoop.git
 cd docker-hadoop
-
-## TODO: Need to do some changes in compose
 
 ## Execute the setup with `nohup` so that it doesn't fail if the ssh connection fails
 nohup sudo ./setup-swarm.sh
