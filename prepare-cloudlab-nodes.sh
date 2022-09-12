@@ -33,8 +33,18 @@ cat hostnames.txt
 ##
 ## Install docker on all cluster machines
 ##
-clush --hostfile hostnames.txt -O ssh_options="-oStrictHostKeyChecking=no ${key_flag}" -l $user -b "curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh"
+clush --hostfile hostnames.txt -O ssh_options="-oStrictHostKeyChecking=no ${key_flag}" -l $user \
+    -b "curl -fsSL https://get.docker.com -o get-docker.sh && \
+        sudo sh get-docker.sh && \
+        sudo groupadd docker && \
+        sudo usermod -aG docker $user && \
+        newgrp docker"
 
+##
+## Setup docker location
+##
+dockerd_config='echo -e "{\n\t\"data-root\": \"/mydata\"\n}"'
+clush --hostfile hostnames.txt -l $user -b "sudo bash -c '$dockerd_config > /etc/docker/daemon.json' && sudo service docker restart"
 ##
 ## Initialize a swarm from the manager
 ##
@@ -65,5 +75,5 @@ git clone https://github.com/binpash/docker-hadoop.git
 cd docker-hadoop
 
 ## Execute the setup with `nohup` so that it doesn't fail if the ssh connection fails
-nohup sudo ./setup-swarm.sh
+nohup sudo ./setup-swarm.sh --eval
 ENDSSH
