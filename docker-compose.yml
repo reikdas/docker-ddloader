@@ -54,6 +54,7 @@ services:
       - "8042:8042"
     volumes:
       - ${PWD}/dish-config.json:/opt/dish/pash/cluster.json
+      - ${PWD}/sample-script.sh:/opt/dish/sample.sh
 
   datanode1:
     image: hadoop-datanode:${RELEASE}
