@@ -14,7 +14,7 @@ RUN yes | bash ${PASH_TOP}/scripts/setup-pash.sh
 RUN yes | bash ${DISH_TOP}/scripts/setup-dspash.sh
 
 RUN if [ "$RELEASE" = "eval" ]; then \
-    apt-get update && cd /opt/pash/evaluation/distr_benchmarks && ./install_all_deps.sh; \
+    apt-get update && cd ${DISH_TOP}/evaluation/distr_benchmarks && ./install_all_deps.sh; \
     fi
 
 # append for unicode issues

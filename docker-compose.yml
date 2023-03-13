@@ -12,7 +12,7 @@ services:
       - ./hadoop.env
     ports:
       - "9870:9870"
-  
+
   resourcemanager:
     build: ./resourcemanager
     container_name: resourcemanager
@@ -26,7 +26,7 @@ services:
       - ./hadoop.env
     ports:
       - "8089:8088"
-  
+
   historyserver:
     build: ./historyserver
     container_name: historyserver
@@ -40,7 +40,7 @@ services:
       - ./hadoop.env
     ports:
       - "8188:8188"
-  
+
   nodemanager1:
     build: ./nodemanager
     container_name: nodemanager1
@@ -53,8 +53,8 @@ services:
     ports:
       - "8042:8042"
     volumes:
-      - ${PWD}/dspash-config.json:/opt/pash/cluster.json
-    
+      - ${PWD}/dspash-config.json:${DISH_TOP}/pash/cluster.json
+
   datanode1:
     build: ./datanode
     container_name: datanode1
@@ -64,7 +64,7 @@ services:
       - hadoop_datanode1:/hadoop/dfs/data
     env_file:
       - ./hadoop.env
-  
+
   datanode2:
     build: ./datanode
     container_name: datanode2
@@ -74,7 +74,7 @@ services:
       - hadoop_datanode2:/hadoop/dfs/data
     env_file:
       - ./hadoop.env
-  
+
   datanode3:
     build: ./datanode
     container_name: datanode3

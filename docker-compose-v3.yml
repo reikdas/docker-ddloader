@@ -7,7 +7,7 @@ services:
       - hbase
     volumes:
       - namenode:/hadoop/dfs/name
-      - ${PWD}/dspash-config.json:/opt/pash/cluster.json
+      - ${PWD}/dspash-config.json:${DISH_TOP}/pash/cluster.json
     environment:
       - CLUSTER_NAME=test
     env_file:
@@ -116,8 +116,8 @@ volumes:
   namenode:
   hadoop_historyserver:
 
+
 networks:
   hbase:
     name: hbase
     external: true
-
