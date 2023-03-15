@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ $1 == '--eval' ]; then
+if [ "$1" == '--eval' ]; then
     export RELEASE="eval"
 else
     export RELEASE="latest"
