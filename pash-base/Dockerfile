@@ -2,7 +2,9 @@ FROM ubuntu:18.04
 ARG RELEASE=latest
 
 RUN apt-get update -y && apt-get update --fix-missing
-RUN apt-get install -y git vim iputils-ping
+## Note: Even though PaSh's distro-deps.sh should understand whether we are in docker
+##       and not need sudo, it doesn't in this case.
+RUN apt-get install -y git vim iputils-ping sudo
 ENV PASH_HOST="docker"
 ENV DISH_TOP="/opt/dish"
 ENV PASH_TOP="${DISH_TOP}/pash"
