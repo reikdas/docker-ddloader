@@ -1,7 +1,5 @@
-ARG BASE=pash-base
+FROM ubuntu:18.04
 ARG RELEASE=latest
-
-FROM $BASE:$RELEASE
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       openjdk-8-jdk \
@@ -10,7 +8,46 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       netcat \
       gnupg \
       libsnappy-dev \
+      openssl \
+      openssh-server \
+      vim \
+      wget \
+      build-essential \
     && rm -rf /var/lib/apt/lists/*
+
+#### INSTALL MPICH ####
+# Source is available at http://www.mpich.org/static/downloads/
+
+# Build Options:
+# See installation guide of target MPICH version
+# Ex: http://www.mpich.org/static/downloads/3.2/mpich-3.2-installguide.pdf
+# These options are passed to the steps below
+ARG MPICH_VERSION="3.2"
+ARG MPICH_CONFIGURE_OPTIONS="--disable-fortran"
+ARG MPICH_MAKE_OPTIONS
+
+# Download, build, and install MPICH
+RUN mkdir /tmp/mpich-src
+WORKDIR /tmp/mpich-src
+RUN wget http://www.mpich.org/static/downloads/${MPICH_VERSION}/mpich-${MPICH_VERSION}.tar.gz \
+      && tar xfz mpich-${MPICH_VERSION}.tar.gz  \
+      && cd mpich-${MPICH_VERSION}  \
+      && ./configure ${MPICH_CONFIGURE_OPTIONS}  \
+      && make ${MPICH_MAKE_OPTIONS} && make install \
+      && rm -rf /tmp/mpich-src
+
+
+#### TEST MPICH INSTALLATION ####
+RUN mkdir /tmp/mpich-test
+WORKDIR /tmp/mpich-test
+COPY mpich-test .
+RUN sh test.sh
+RUN rm -rf /tmp/mpich-test
+
+
+#### CLEAN UP ####
+WORKDIR /
+RUN rm -rf /tmp/*
       
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
@@ -33,6 +70,7 @@ RUN ln -s /opt/hadoop-$HADOOP_VERSION/etc/hadoop /etc/hadoop
 RUN mkdir /opt/hadoop-$HADOOP_VERSION/logs
 
 RUN mkdir /hadoop-data
+RUN mkdir /test-docker
 
 ENV HADOOP_HOME=/opt/hadoop-$HADOOP_VERSION
 ENV HADOOP_CONF_DIR=/etc/hadoop
@@ -40,6 +78,36 @@ ENV HADOOP_CLASSPATH=/usr/lib/jvm/java-8-openjdk-amd64/lib/tools.jar
 ENV MULTIHOMED_NETWORK=1
 ENV USER=root
 ENV PATH $HADOOP_HOME/bin/:$PATH
+
+# # ------------------------------------------------------------
+# # Set up SSH Server 
+# # ------------------------------------------------------------
+
+# Add host keys
+RUN cd /etc/ssh/ && ssh-keygen -A -N ''
+
+# Config SSH Daemon
+RUN  sed -i "s/#PasswordAuthentication.*/PasswordAuthentication no/g" /etc/ssh/sshd_config \
+  && sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config \
+  && sed -i "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config \
+  && sed -i "s/#AuthorizedKeysFile/AuthorizedKeysFile/g" /etc/ssh/sshd_config
+
+# Set up user's public and private keys
+ENV SSHDIR /root/.ssh
+RUN mkdir -p ${SSHDIR}
+
+# Default ssh config file that skips (yes/no) question when first login to the host
+RUN echo "StrictHostKeyChecking no" > ${SSHDIR}/config
+# This file can be overwritten by the following onbuild step if ssh/ directory has config file
+
+COPY ssh/ ${SSHDIR}/
+
+RUN cat ${SSHDIR}/*.pub >> ${SSHDIR}/authorized_keys
+RUN chmod -R 600 ${SSHDIR}/* \
+         && chown -R ${USER}:${USER} ${SSHDIR}
+RUN chmod 711 ${SSHDIR}/authorized_keys
+
+RUN service ssh start
 
 ADD entrypoint.sh /entrypoint.sh
 
