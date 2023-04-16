@@ -16,7 +16,6 @@ services:
   resourcemanager:
     image: hadoop-resourcemanager:${RELEASE}
     container_name: resourcemanager
-    restart: on-failure
     depends_on:
       - namenode
       - datanode1

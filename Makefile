@@ -7,7 +7,6 @@ RELEASE := latest
 endif
 
 build:
-	docker build -t pash-base:$(RELEASE) ./pash-base --build-arg RELEASE=$(RELEASE)
 	docker build -t hadoop-pash-base:$(RELEASE) ./base --build-arg RELEASE=$(RELEASE)
 
 	docker build -t hadoop-namenode:$(RELEASE) ./namenode --build-arg RELEASE=$(RELEASE)
