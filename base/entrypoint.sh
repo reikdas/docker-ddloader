@@ -110,9 +110,13 @@ function wait_for_it()
     echo "[$i/$max_try] $service:${port} is available."
 }
 
-for i in ${SERVICE_PRECONDITION[@]}
-do
-    wait_for_it ${i}
-done
+service ssh start
+
+if [ -z "$(ssh-keygen -F datanode2)" ]; then
+  ssh-keyscan -H datanode2 >> ~/.ssh/known_hosts
+fi
+if [ -z "$(ssh-keygen -F datanode3)" ]; then
+  ssh-keyscan -H datanode3 >> ~/.ssh/known_hosts
+fi
 
 exec $@

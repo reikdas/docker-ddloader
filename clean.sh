@@ -1,9 +1,5 @@
 #!/bin/bash
-./stop.sh
-
-docker rm -vf $(docker ps --filter ancestor=hadoop-pash-base -aq);
-docker rmi -f $(docker images --format "{{.Repository}} {{.ID}}" | cut -d " " -f2)
-
-echo "Warning: you will need to run image and volume on every swarm node"
-docker image prune
-docker system prune --volumes # you need to run this on every machine to clean up the disk
+docker-compose down
+docker rm -vf $(docker ps -aq)
+docker volume rm $(docker volume ls -q)
+docker rmi -f $(docker images -aq)

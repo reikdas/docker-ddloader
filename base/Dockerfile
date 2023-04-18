@@ -12,6 +12,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       openssh-server \
       vim \
       wget \
+      git \
       build-essential \
     && rm -rf /var/lib/apt/lists/*
 
@@ -48,6 +49,8 @@ RUN rm -rf /tmp/mpich-test
 #### CLEAN UP ####
 WORKDIR /
 RUN rm -rf /tmp/*
+
+#### Setup HDFS ####
       
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
@@ -70,7 +73,6 @@ RUN ln -s /opt/hadoop-$HADOOP_VERSION/etc/hadoop /etc/hadoop
 RUN mkdir /opt/hadoop-$HADOOP_VERSION/logs
 
 RUN mkdir /hadoop-data
-RUN mkdir /test-docker
 
 ENV HADOOP_HOME=/opt/hadoop-$HADOOP_VERSION
 ENV HADOOP_CONF_DIR=/etc/hadoop
@@ -78,6 +80,10 @@ ENV HADOOP_CLASSPATH=/usr/lib/jvm/java-8-openjdk-amd64/lib/tools.jar
 ENV MULTIHOMED_NETWORK=1
 ENV USER=root
 ENV PATH $HADOOP_HOME/bin/:$PATH
+
+#### Move file to HDFS
+COPY 1G.txt /1G.txt
+COPY text.txt /text.txt
 
 # # ------------------------------------------------------------
 # # Set up SSH Server 
@@ -97,7 +103,7 @@ ENV SSHDIR /root/.ssh
 RUN mkdir -p ${SSHDIR}
 
 # Default ssh config file that skips (yes/no) question when first login to the host
-RUN echo "StrictHostKeyChecking no" > ${SSHDIR}/config
+# RUN echo "StrictHostKeyChecking no" > ${SSHDIR}/config
 # This file can be overwritten by the following onbuild step if ssh/ directory has config file
 
 COPY ssh/ ${SSHDIR}/
@@ -107,7 +113,29 @@ RUN chmod -R 600 ${SSHDIR}/* \
          && chown -R ${USER}:${USER} ${SSHDIR}
 RUN chmod 711 ${SSHDIR}/authorized_keys
 
-RUN service ssh start
+#### Setup LMS-HDFS
+ARG SBT_VERSION=1.8.0
+
+# prevent this error: java.lang.IllegalStateException: cannot run sbt from root directory without -Dsbt.rootdir=true; see sbt/sbt#1458
+WORKDIR /app
+
+# Install sbt
+RUN \
+  mkdir /working/ && \
+  cd /working/ && \
+  curl -L -o sbt-$SBT_VERSION.deb https://repo.scala-sbt.org/scalasbt/debian/sbt-$SBT_VERSION.deb && \
+  dpkg -i sbt-$SBT_VERSION.deb && \
+  rm sbt-$SBT_VERSION.deb && \
+  apt-get update && \
+  apt-get install sbt && \
+  cd && \
+  rm -r /working/ && \
+  sbt sbtVersion
+
+WORKDIR /
+
+RUN git clone --recurse-submodules https://github.com/reikdas/LMS-HDFS.git --branch networks-bonus
+# RUN cd LMS-HDFS && sbt test
 
 ADD entrypoint.sh /entrypoint.sh
 
