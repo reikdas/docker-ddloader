@@ -1,82 +1,52 @@
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/big-data-europe/Lobby)
-
-
 # Hadoop Docker
 
+## Generic docker setup
 
+* Install docker
+* Install docker-compose
+* Enable docker daemon
 
-## Quick Start
+## Setup cluster
 
-To deploy a simulated HDFS cluster with pash installed, run:
 ```
-  ./setup-compose.sh
-```
-
-To stop it you can run
-```
-./stop-compose.sh [-v]
+./setup-compose.sh
 ```
 
-Or to deploy in swarm:
+## Enter node
 
-Please follow this [docker swarm tutorial](https://docs.docker.com/engine/swarm/swarm-tutorial/) to setup swarm with couple machines if not setup. 
 ```
-./setup-swarm.sh
-```
-
-To teardown the swarm
-```
-./stop-swarm.sh
+docker exec -it <node> /bin/bash
 ```
 
-To start a client that interacts with the hdfs cluster run (you can use this client to run bash scripts on the cluster)
+In terms of the project, you should launch the `datanode1` node like this:
 ```
-./start-client.sh
+docker exec -it datanode1 /bin/bash
 ```
 
-Finally, to clean all images and volumes (note: you might want to run this
-on all nodes that participated in swarm mode)
+## Moving file to HDFS
+
+The first time you enter a node, you probably want to move the `/1G.txt` file to HDFS by executing - 
+```
+hdfs dfs -moveFromLocal /1G.txt /1G.txt
+```
+
+## Executing DDLoader distributed programs
+
+Inside the `datanode1` container, irst enter the DDLoader directory by -
+```
+cd LMS-HDFS
+```
+
+And then execute the `execdd.sh` script. The syntax is - `./execdd.sh <op> /1G.txt <num_nodes>`. `op` is one of `WordCount`, `Whitespace` and `CharFreq`. `num_nodes` is either 1, 2 or 3. 
+
+For eg. to run WordCount on all 3 nodes, we would do-
+```
+./execdd.sh WordCount /1G.txt 3
+```
+
+The way the script is set up right now, only supports executing the script from `datanode1`. Feel free to look at the script and compile/copy over the executable to different nodes, to try out different combinations.
+
+## Remove every docker container, image and volume on your system
 ```
 ./clean.sh
 ```
-
-<!-- Run example wordcount job:
-```
-  make wordcount
-``` -->
-
-`docker-compose` creates a docker network that can be found by running `docker network list`, e.g. `dockerhadoop_default`.
-
-Run `docker network inspect` on the network (e.g. `dockerhadoop_default`) to find the IP the hadoop interfaces are published on. Access these interfaces with the following URLs:
-
-* Namenode: http://<dockerhadoop_IP_address>:9870/dfshealth.html#tab-overview
-* History server: http://<dockerhadoop_IP_address>:8188/applicationhistory
-* Datanode: http://<dockerhadoop_IP_address>:9864/
-* Nodemanager: http://<dockerhadoop_IP_address>:8042/node
-* Resource manager: http://<dockerhadoop_IP_address>:8088/
-
-## Configure Environment Variables
-
-The configuration parameters can be specified in the hadoop.env file or as environmental variables for specific services (e.g. namenode, datanode etc.):
-```
-  CORE_CONF_fs_defaultFS=hdfs://namenode:8020
-```
-
-CORE_CONF corresponds to core-site.xml. fs_defaultFS=hdfs://namenode:8020 will be transformed into:
-```
-  <property><name>fs.defaultFS</name><value>hdfs://namenode:8020</value></property>
-```
-To define dash inside a configuration parameter, use triple underscore, such as YARN_CONF_yarn_log___aggregation___enable=true (yarn-site.xml):
-```
-  <property><name>yarn.log-aggregation-enable</name><value>true</value></property>
-```
-
-The available configurations are:
-* /etc/hadoop/core-site.xml CORE_CONF
-* /etc/hadoop/hdfs-site.xml HDFS_CONF
-* /etc/hadoop/yarn-site.xml YARN_CONF
-* /etc/hadoop/httpfs-site.xml HTTPFS_CONF
-* /etc/hadoop/kms-site.xml KMS_CONF
-* /etc/hadoop/mapred-site.xml  MAPRED_CONF
-
-If you need to extend some other configuration file, refer to base/entrypoint.sh bash script.

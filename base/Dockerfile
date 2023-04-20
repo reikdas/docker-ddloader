@@ -83,7 +83,6 @@ ENV PATH $HADOOP_HOME/bin/:$PATH
 
 #### Move file to HDFS
 COPY 1G.txt /1G.txt
-COPY text.txt /text.txt
 
 # # ------------------------------------------------------------
 # # Set up SSH Server 
