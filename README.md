@@ -41,9 +41,9 @@ cd LMS-HDFS
 
 And then execute the `execdd.sh` script. The syntax is - `./execdd.sh <op> /1G.txt <num_nodes>`. `op` is one of `WordCount`, `Whitespace` and `CharFreq`. `num_nodes` is either 1, 2 or 3. 
 
-For eg. to run WordCount on all 3 nodes, we would do-
+For eg. to run Character frequency count on all 3 nodes, we would do-
 ```
-./execdd.sh WordCount /1G.txt 3
+./execdd.sh CharFreq /1G.txt 3
 ```
 
 The way the script is set up right now, only supports executing the script from `datanode1`. Feel free to look at the script and compile/copy over the executable to different nodes, to try out different combinations.
