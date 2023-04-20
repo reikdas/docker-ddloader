@@ -25,6 +25,8 @@ docker exec -it datanode1 /bin/bash
 
 ## Moving file to HDFS
 
+Make sure you have 1G.txt in base/. It doesn't come with the GitHub repository.
+
 The first time you enter a node, you probably want to move the `/1G.txt` file to HDFS by executing - 
 ```
 hdfs dfs -moveFromLocal /1G.txt /1G.txt
